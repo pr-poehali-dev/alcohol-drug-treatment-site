@@ -3,10 +3,33 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import Icon from "@/components/ui/icon";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState("main");
+  const [visibleSections, setVisibleSections] = useState<string[]>([]);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const sectionId = entry.target.getAttribute('data-section');
+            if (sectionId) {
+              setVisibleSections(prev => [...prev.filter(id => id !== sectionId), sectionId]);
+            }
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    const sections = document.querySelectorAll('[data-section]');
+    sections.forEach(section => observerRef.current?.observe(section));
+
+    return () => observerRef.current?.disconnect();
+  }, []);
 
   const doctors = [
     {
@@ -142,25 +165,25 @@ const Index = () => {
       </section>
 
       {/* Services Overview */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white" data-section="services">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-medical-dark mb-12">Наши услуги</h2>
+          <h2 className={`text-3xl font-bold text-center text-medical-dark mb-12 transition-all duration-700 ${visibleSections.includes('services') ? 'animate-fade-in' : 'opacity-0 translate-y-8'}`}>Наши услуги</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className={`border-0 shadow-lg hover:shadow-xl transition-all duration-500 ${visibleSections.includes('services') ? 'animate-scale-in' : 'opacity-0 translate-y-8'}`} style={{ animationDelay: '100ms' }}>
               <CardHeader className="text-center">
                 <Icon name="Zap" size={48} className="text-medical-blue mx-auto mb-4" />
                 <CardTitle>Детоксикация</CardTitle>
                 <CardDescription>Безопасное очищение организма под медицинским контролем</CardDescription>
               </CardHeader>
             </Card>
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className={`border-0 shadow-lg hover:shadow-xl transition-all duration-500 ${visibleSections.includes('services') ? 'animate-scale-in' : 'opacity-0 translate-y-8'}`} style={{ animationDelay: '200ms' }}>
               <CardHeader className="text-center">
                 <Icon name="Brain" size={48} className="text-medical-green mx-auto mb-4" />
                 <CardTitle>Психотерапия</CardTitle>
                 <CardDescription>Индивидуальная и групповая работа с психологом</CardDescription>
               </CardHeader>
             </Card>
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className={`border-0 shadow-lg hover:shadow-xl transition-all duration-500 ${visibleSections.includes('services') ? 'animate-scale-in' : 'opacity-0 translate-y-8'}`} style={{ animationDelay: '300ms' }}>
               <CardHeader className="text-center">
                 <Icon name="Users" size={48} className="text-medical-healing mx-auto mb-4" />
                 <CardTitle>Реабилитация</CardTitle>
@@ -172,12 +195,12 @@ const Index = () => {
       </section>
 
       {/* Doctors Section */}
-      <section id="doctors" className="py-16 bg-gray-50">
+      <section id="doctors" className="py-16 bg-gray-50" data-section="doctors">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-medical-dark mb-12">Наши врачи</h2>
+          <h2 className={`text-3xl font-bold text-center text-medical-dark mb-12 transition-all duration-700 ${visibleSections.includes('doctors') ? 'animate-fade-in' : 'opacity-0 translate-y-8'}`}>Наши врачи</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {doctors.map((doctor, index) => (
-              <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
+              <Card key={index} className={`border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 duration-500 ${visibleSections.includes('doctors') ? 'animate-scale-in' : 'opacity-0 translate-y-8'}`} style={{ animationDelay: `${(index + 1) * 150}ms` }}>
                 <CardHeader className="text-center">
                   <div className="w-24 h-24 bg-medical-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Icon name="User" size={40} className="text-medical-blue" />
@@ -202,12 +225,12 @@ const Index = () => {
       </section>
 
       {/* Reviews Section */}
-      <section id="reviews" className="py-16 bg-white">
+      <section id="reviews" className="py-16 bg-white" data-section="reviews">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-medical-dark mb-12">Отзывы пациентов</h2>
+          <h2 className={`text-3xl font-bold text-center text-medical-dark mb-12 transition-all duration-700 ${visibleSections.includes('reviews') ? 'animate-fade-in' : 'opacity-0 translate-y-8'}`}>Отзывы пациентов</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-0 shadow-lg">
+              <Card key={index} className={`border-0 shadow-lg transition-all duration-500 ${visibleSections.includes('reviews') ? 'animate-scale-in' : 'opacity-0 translate-y-8'}`} style={{ animationDelay: `${(index + 1) * 150}ms` }}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg">{testimonial.name}</CardTitle>
@@ -229,11 +252,11 @@ const Index = () => {
       </section>
 
       {/* Prices Section */}
-      <section id="prices" className="py-16 bg-gray-50">
+      <section id="prices" className="py-16 bg-gray-50" data-section="prices">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-medical-dark mb-12">Цены на услуги</h2>
+          <h2 className={`text-3xl font-bold text-center text-medical-dark mb-12 transition-all duration-700 ${visibleSections.includes('prices') ? 'animate-fade-in' : 'opacity-0 translate-y-8'}`}>Цены на услуги</h2>
           <div className="max-w-2xl mx-auto">
-            <Card className="border-0 shadow-lg">
+            <Card className={`border-0 shadow-lg transition-all duration-500 ${visibleSections.includes('prices') ? 'animate-scale-in' : 'opacity-0 translate-y-8'}`}>
               <CardContent className="p-8">
                 <div className="space-y-4">
                   {services.map((service, index) => (
