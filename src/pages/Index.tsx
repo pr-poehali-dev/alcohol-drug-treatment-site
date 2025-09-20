@@ -132,7 +132,7 @@ const Index = () => {
             </div>
             <div className="animate-scale-in">
               <img 
-                src="/img/5a748136-8321-446a-bde2-8f03264102de.jpg" 
+                src="/img/5c6fb59d-a2cf-4d92-8583-82b204837584.jpg" 
                 alt="Медицинский центр"
                 className="rounded-2xl shadow-2xl w-full"
               />
